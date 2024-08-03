@@ -43,7 +43,7 @@ class RemoveCartItemController extends GetxController {
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         cartRemoveItemModel(CartRemoveItemModel.fromJson(responseData));
-        cartController.fetchCartProducts();
+        // cartController.fetchCartProducts();
         // CustomSnackBar.showCustomSnackBar(
         //     title: "Success", message: '${cartRemoveItemModel.value.message}');
       } else if (response.statusCode == 401) {

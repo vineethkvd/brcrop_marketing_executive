@@ -18,8 +18,9 @@ class CartController extends GetxController {
   var productList = <Data>[].obs;
   var priceTotal = ''.obs;
   var curTotal = ''.obs;
+  var filteredProducts= <Data>[].obs;
 
-  Future<void> fetchCartProducts() async {
+  Future<void> fetchCartProducts({required String orderType}) async {
     final baseController = BaseController();
     // baseController.showLoading('Fetching slider data...');
 
@@ -27,7 +28,7 @@ class CartController extends GetxController {
     const apiToken = ApiEndPoints.apiToken;
     var empId = await CacheHelper.getData('empId');
     print("empId $empId");
-    final requestData = {"api_key": apiToken, "me_id": empId};
+    final requestData = {"api_key": apiToken, "me_id": empId,"order_type":orderType};
 
     try {
       final baseClient = BaseClient();
