@@ -15,7 +15,8 @@ import '../controller/payment_controller.dart';
 
 class CreditTermScreen extends StatefulWidget {
   final String amount;
-  const CreditTermScreen({super.key, required this.amount});
+  final String orderType;
+  const CreditTermScreen({super.key, required this.amount, required this.orderType});
 
   @override
   State<CreditTermScreen> createState() => _CreditTermScreenState();
@@ -224,7 +225,7 @@ class _CreditTermScreenState extends State<CreditTermScreen> {
                                 order_amount: int.parse(widget.amount),
                                 payment_type: "Credit Term",
                                 dealer_id:
-                                    dealerListController.selectedId.value);
+                                    dealerListController.selectedId.value, orderType: widget.orderType);
                           },
                           backgroundColor: Color(0xFF134005),
                           width: Get.width * 0.5.w,

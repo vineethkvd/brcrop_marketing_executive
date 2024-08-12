@@ -19,7 +19,8 @@ import 'credit_term.dart';
 
 class ShowQRScreen extends StatefulWidget {
   final String amt;
-  const ShowQRScreen({super.key, required this.amt});
+  final String orderType;
+  const ShowQRScreen({super.key, required this.amt, required this.orderType});
 
   @override
   State<ShowQRScreen> createState() => _ShowQRScreenState();
@@ -258,7 +259,7 @@ class _ShowQRScreenState extends State<ShowQRScreen> {
                                     paid_amount: int.parse(
                                         fetchQRImageController.amt.value.text),
                                     transfer_id: fetchQRImageController
-                                        .transaction.value.text,
+                                        .transaction.value.text, orderType: widget.orderType
                                   );
                                 }
                               },

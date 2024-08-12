@@ -15,7 +15,8 @@ import 'credit_term.dart';
 
 class PaymentPage extends StatefulWidget {
   final String amount;
-  const PaymentPage({super.key, required this.amount});
+  final String orderType;
+  const PaymentPage({super.key, required this.amount, required this.orderType});
 
   @override
   State<PaymentPage> createState() => _PaymentPageState();
@@ -63,6 +64,7 @@ class _PaymentPageState extends State<PaymentPage> {
                       Get.to(
                           ShowQRScreen(
                             amt: widget.amount,
+                            orderType: widget.orderType,
                           ),
                           transition: Transition.cupertino);
                     },
@@ -80,7 +82,11 @@ class _PaymentPageState extends State<PaymentPage> {
                       //     order_amount: int.parse(widget.amount),
                       //     payment_type: 'Cash on Delivery',
                       //     dealer_id: "");
-                      Get.to(CashOnDeliveryPage(amt: widget.amount),
+                      Get.to(
+                          CashOnDeliveryPage(
+                            amt: widget.amount,
+                            orderType: widget.orderType,
+                          ),
                           transition: Transition.leftToRightWithFade);
                     },
                     backgroundColor: const Color(0xFF134005),
@@ -93,7 +99,11 @@ class _PaymentPageState extends State<PaymentPage> {
                   padding: EdgeInsets.symmetric(vertical: 15.h),
                   child: CustomElevatedBtn(
                     onPressed: () {
-                      Get.to(CreditTermScreen(amount: widget.amount),
+                      Get.to(
+                          CreditTermScreen(
+                            amount: widget.amount,
+                            orderType: widget.orderType,
+                          ),
                           transition: Transition.leftToRightWithFade);
                     },
                     backgroundColor: Color(0xFF134005),

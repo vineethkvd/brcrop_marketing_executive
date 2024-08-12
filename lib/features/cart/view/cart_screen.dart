@@ -23,25 +23,31 @@ class CartScreens extends StatefulWidget {
 class _CartScreensState extends State<CartScreens> {
   final PaymentController paymentController = Get.put(PaymentController());
   final CartController cartController = Get.put(CartController());
-  final AddToCartController addToCartController = Get.put(AddToCartController());
-  final RemoveCartItemController removeCartItemController = Get.put(RemoveCartItemController());
+  final AddToCartController addToCartController =
+      Get.put(AddToCartController());
+  final RemoveCartItemController removeCartItemController =
+      Get.put(RemoveCartItemController());
 
   @override
   void initState() {
     super.initState();
     cartController.selectedValue.listen((_) => _fetchCart());
-    if (cartController.selectedValue.value.isEmpty && cartController.dropdownCart.isNotEmpty) {
-      cartController.selectedValue.value = cartController.dropdownCart.first.value ?? '';
-      cartController.selectedName.value = cartController.dropdownCart.first.name ?? '';
+    if (cartController.selectedValue.value.isEmpty &&
+        cartController.dropdownCart.isNotEmpty) {
+      cartController.selectedValue.value =
+          cartController.dropdownCart.first.value ?? '';
+      cartController.selectedName.value =
+          cartController.dropdownCart.first.name ?? '';
     }
   }
 
   void _fetchCart() {
     if (cartController.selectedValue.value == "1") {
-      cartController.fetchCartProducts(orderType: '');
+      cartController.fetchCartProducts(orderType: 'regular');
     } else if (cartController.selectedValue.value == "2") {
       cartController.fetchCartProducts(orderType: 'scheme');
     }
+    setState(() {});
   }
 
   @override
@@ -51,7 +57,7 @@ class _CartScreensState extends State<CartScreens> {
       child: SafeArea(
         child: Scaffold(
           bottomNavigationBar: Obx(
-                () => Container(
+            () => Container(
               padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 20.w),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -71,7 +77,7 @@ class _CartScreensState extends State<CartScreens> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Total: ₹${cartController.cartModel.value.totalAmount}",
+                    "Total: ₹${cartController.cartModel.value.totalAmount ?? 0}",
                     style: TextStyle(
                       fontSize: 16.sp,
                       color: AppColor.txtColorMain,
@@ -80,13 +86,27 @@ class _CartScreensState extends State<CartScreens> {
                   ),
                   CustomElevatedBtnTwo(
                     onPressed: () {
-                      if (cartController.curTotal.value.isNotEmpty && double.tryParse(cartController.curTotal.value) != 0) {
+                      if (cartController.cartModel.value.totalAmount != null &&
+                          cartController.cartModel.value.totalAmount!
+                              .toString()
+                              .isNotEmpty &&
+                          double.tryParse(cartController
+                                  .cartModel.value.totalAmount!
+                                  .toString()) !=
+                              0) {
                         Get.to(
-                          PaymentPage(amount: cartController.curTotal.value),
+                          () => PaymentPage(
+                            amount: cartController.cartModel.value.totalAmount
+                                .toString(),
+                            orderType: cartController.selectedValue.value == "1"
+                                ? 'regular'
+                                : 'scheme',
+                          ),
                           transition: Transition.leftToRightWithFade,
                         );
                       } else {
-                        CustomSnackBar.showCustomErrorSnackBar(title: "Failed", message: "No item in cart");
+                        CustomSnackBar.showCustomErrorSnackBar(
+                            title: "Failed", message: "No item in cart");
                       }
                     },
                     backgroundColor: AppColor.primarycolor,
@@ -124,7 +144,7 @@ class _CartScreensState extends State<CartScreens> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Obx(
-                            () {
+                        () {
                           return Align(
                             alignment: Alignment.centerRight,
                             child: Container(
@@ -147,16 +167,26 @@ class _CartScreensState extends State<CartScreens> {
                                     padding: EdgeInsets.only(right: 10),
                                     child: Icon(Icons.arrow_drop_down),
                                   ),
-                                  value: cartController.selectedValue.value.isEmpty ? null : cartController.selectedValue.value,
+                                  value:
+                                      cartController.selectedValue.value.isEmpty
+                                          ? null
+                                          : cartController.selectedValue.value,
                                   onChanged: (newValue) {
-                                    cartController.selectedValue.value = newValue!;
-                                    cartController.selectedName.value = cartController.dropdownCart.firstWhere((element) => element.value == newValue).name!;
+                                    cartController.selectedValue.value =
+                                        newValue!;
+                                    cartController.selectedName.value =
+                                        cartController.dropdownCart
+                                            .firstWhere((element) =>
+                                                element.value == newValue)
+                                            .name!;
                                   },
-                                  items: cartController.dropdownCart.map((data) {
+                                  items:
+                                      cartController.dropdownCart.map((data) {
                                     return DropdownMenuItem<String>(
                                       value: data.value,
                                       child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12.0),
                                         child: Text(
                                           data.name ?? '',
                                           style: TextStyle(
@@ -180,125 +210,147 @@ class _CartScreensState extends State<CartScreens> {
                 ),
                 Expanded(
                   child: Obx(
-                        () {
+                    () {
                       return cartController.productList.value.isNotEmpty
                           ? ListView.builder(
-                        itemCount: cartController.productList.value.length,
-                        itemBuilder: (context, index) {
-                          final data = cartController.productList.value[index];
-                          return Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10.h),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.r),
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 5.r,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.all(8.w),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(8.r),
-                                      child: CachedNetworkImage(
-                                        imageUrl: data.proImg1 ?? '',
-                                        placeholder: (context, url) => Shimmer.fromColors(
-                                          baseColor: Colors.grey[300]!,
-                                          highlightColor: Colors.grey[100]!,
-                                          child: Container(
-                                            width: 100.w,
-                                            height: 100.h,
-                                            color: Colors.white,
+                              itemCount:
+                                  cartController.productList.value.length,
+                              itemBuilder: (context, index) {
+                                final data =
+                                    cartController.productList.value[index];
+                                return Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 10.h),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10.r),
+                                      color: Colors.white,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black12,
+                                          blurRadius: 5.r,
+                                          offset: Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          padding: EdgeInsets.all(8.w),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(8.r),
+                                            child: CachedNetworkImage(
+                                              imageUrl: data.proImg1 ?? '',
+                                              placeholder: (context, url) =>
+                                                  Shimmer.fromColors(
+                                                baseColor: Colors.grey[300]!,
+                                                highlightColor:
+                                                    Colors.grey[100]!,
+                                                child: Container(
+                                                  width: 100.w,
+                                                  height: 100.h,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      Icon(Icons.error),
+                                              width: 100.w,
+                                              height: 100.h,
+                                              fit: BoxFit.cover,
+                                            ),
                                           ),
                                         ),
-                                        errorWidget: (context, url, error) => Icon(Icons.error),
-                                        width: 100.w,
-                                        height: 100.h,
-                                        fit: BoxFit.cover,
-                                      ),
+                                        Expanded(
+                                          child: Padding(
+                                            padding: EdgeInsets.all(8.w),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  data.productName ?? '',
+                                                  maxLines: 2,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    fontSize: 14.sp,
+                                                    color:
+                                                        AppColor.txtColorMain,
+                                                    fontFamily:
+                                                        "PoppinsSemiBold",
+                                                  ),
+                                                ),
+                                                SizedBox(height: 10.h),
+                                                Text(
+                                                  "Quantity: ${data.quantity}",
+                                                  style: TextStyle(
+                                                    fontSize: 12.sp,
+                                                    color:
+                                                        AppColor.txtColorMain,
+                                                    fontFamily:
+                                                        "PoppinsRegular",
+                                                  ),
+                                                ),
+                                                Text(
+                                                  "Price: ₹${data.price}",
+                                                  style: TextStyle(
+                                                    fontSize: 12.sp,
+                                                    color:
+                                                        AppColor.txtColorMain,
+                                                    fontFamily:
+                                                        "PoppinsRegular",
+                                                  ),
+                                                ),
+                                                if (data.schemeStatus == "1")
+                                                  Text(
+                                                    "Order Type: Scheme Order",
+                                                    style: TextStyle(
+                                                      fontSize: 12.sp,
+                                                      color:
+                                                          AppColor.txtColorMain,
+                                                      fontFamily:
+                                                          "PoppinsRegular",
+                                                    ),
+                                                  ),
+                                                Align(
+                                                  alignment:
+                                                      Alignment.bottomRight,
+                                                  child: CustomElevatedBtnTwo(
+                                                    onPressed: () async {
+                                                      await removeCartItemController
+                                                          .removeProduct(
+                                                              cart_id:
+                                                                  data.cartId ??
+                                                                      '');
+                                                      _fetchCart();
+                                                    },
+                                                    backgroundColor: Colors.red,
+                                                    width: 100.w,
+                                                    height: 30.h,
+                                                    title: 'Remove',
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: EdgeInsets.all(8.w),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            data.productName ?? '',
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontSize: 14.sp,
-                                              color: AppColor.txtColorMain,
-                                              fontFamily: "PoppinsSemiBold",
-                                            ),
-                                          ),
-                                          SizedBox(height: 10.h),
-                                          Text(
-                                            "Quantity: ${data.quantity}",
-                                            style: TextStyle(
-                                              fontSize: 12.sp,
-                                              color: AppColor.txtColorMain,
-                                              fontFamily: "PoppinsRegular",
-                                            ),
-                                          ),
-                                          Text(
-                                            "Price: ₹${data.price}",
-                                            style: TextStyle(
-                                              fontSize: 12.sp,
-                                              color: AppColor.txtColorMain,
-                                              fontFamily: "PoppinsRegular",
-                                            ),
-                                          ),
-                                          if (data.schemeStatus == "1")
-                                            Text(
-                                              "Order Type: Scheme Order",
-                                              style: TextStyle(
-                                                fontSize: 12.sp,
-                                                color: AppColor.txtColorMain,
-                                                fontFamily: "PoppinsRegular",
-                                              ),
-                                            ),
-                                          Align(
-                                            alignment: Alignment.bottomRight,
-                                            child: CustomElevatedBtnTwo(
-                                              onPressed: () async {
-                                                await removeCartItemController.removeProduct(cart_id: data.cartId ?? '');
-                                                _fetchCart();
-                                              },
-                                              backgroundColor: Colors.red,
-                                              width: 100.w,
-                                              height: 30.h,
-                                              title: 'Remove',
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      )
+                                );
+                              },
+                            )
                           : Center(
-                        child: Text(
-                          'No items in the cart',
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            color: AppColor.txtColorMain,
-                            fontFamily: "PoppinsRegular",
-                          ),
-                        ),
-                      );
+                              child: Text(
+                                'No items in the cart',
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  color: AppColor.txtColorMain,
+                                  fontFamily: "PoppinsRegular",
+                                ),
+                              ),
+                            );
                     },
                   ),
                 ),

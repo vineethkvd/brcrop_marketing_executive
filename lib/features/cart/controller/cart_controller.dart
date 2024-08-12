@@ -18,7 +18,7 @@ class CartController extends GetxController {
   var productList = <Data>[].obs;
   var priceTotal = ''.obs;
   var curTotal = ''.obs;
-  var filteredProducts= <Data>[].obs;
+  var filteredProducts = <Data>[].obs;
 
   Future<void> fetchCartProducts({required String orderType}) async {
     final baseController = BaseController();
@@ -28,14 +28,17 @@ class CartController extends GetxController {
     const apiToken = ApiEndPoints.apiToken;
     var empId = await CacheHelper.getData('empId');
     print("empId $empId");
-    final requestData = {"api_key": apiToken, "me_id": empId,"order_type":orderType};
+    final requestData = {
+      "api_key": apiToken,
+      "me_id": empId,
+      "order_type": orderType
+    };
 
     try {
       final baseClient = BaseClient();
       var response = await baseClient
           .postMethod(apiUrl, requestData)
           .catchError(baseController.handleError);
-
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         cartModel(CartModel.fromJson(responseData));
@@ -68,10 +71,11 @@ class CartController extends GetxController {
       // baseController.hideLoading();
     }
   }
+
   var dropdownCart = <DropDownModel>[
     DropDownModel(name: 'Regular', value: '1'),
     DropDownModel(name: 'Scheme', value: '2'),
   ].obs;
-  var selectedValue=''.obs;
-  var selectedName=''.obs;
+  var selectedValue = ''.obs;
+  var selectedName = ''.obs;
 }

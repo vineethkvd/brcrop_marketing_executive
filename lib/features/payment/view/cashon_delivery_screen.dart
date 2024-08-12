@@ -19,7 +19,8 @@ import 'credit_term.dart';
 
 class CashOnDeliveryPage extends StatefulWidget {
   final String amt;
-  const CashOnDeliveryPage({super.key, required this.amt});
+  final String orderType;
+  const CashOnDeliveryPage({super.key, required this.amt, required this.orderType});
 
   @override
   State<CashOnDeliveryPage> createState() => _CashOnDeliveryPageState();
@@ -211,7 +212,7 @@ class _CashOnDeliveryPageState extends State<CashOnDeliveryPage> {
                                   merchantPaymentController.payMerchant(
                                       order_amount: int.parse(widget.amt),
                                       payment_type: 'Cash on Delivery',
-                                      dealer_id:  driverListController.selectedId.value);
+                                      dealer_id:  driverListController.selectedId.value, orderType: widget.orderType);
                                 }
                               },
                               backgroundColor: const Color(0xFF134005),

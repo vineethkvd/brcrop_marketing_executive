@@ -22,7 +22,8 @@ import '../model/merchant_payment_model.dart';
 
 class MerchantPaymentController extends GetxController {
   var merchantPaymentModel = MerchantPaymentModel().obs;
-  final BottomNavBarController bottomNavBarController = Get.put(BottomNavBarController());
+  final BottomNavBarController bottomNavBarController =
+      Get.put(BottomNavBarController());
   var success_link = ''.obs;
   var failed_link = ''.obs;
 
@@ -32,7 +33,8 @@ class MerchantPaymentController extends GetxController {
   Future<void> payMerchant(
       {required int order_amount,
       required String payment_type,
-      required String dealer_id}) async {
+      required String dealer_id,
+      required String orderType}) async {
     final baseController = BaseController();
     const apiUrl = ApiEndPoints.mainBaseURL + ApiEndPoints.mePayment;
     print("apiUrl $apiUrl");
@@ -44,7 +46,8 @@ class MerchantPaymentController extends GetxController {
       "me_id": empId,
       "order_amount": order_amount,
       "payment_type": payment_type,
-      "dealer_id": dealer_id
+      "dealer_id": dealer_id,
+      "order_type": orderType
     };
 
     try {
@@ -68,8 +71,9 @@ class MerchantPaymentController extends GetxController {
             if (tranId.value.isNotEmpty) {
               hitPayment(url: success_link.value, tranId: tranId.value);
             }
-            bottomNavBarController.selectedIndex.value=0;
-            Get.to(const NavigationScreen(),transition: Transition.leftToRightWithFade);
+            bottomNavBarController.selectedIndex.value = 0;
+            Get.to(const NavigationScreen(),
+                transition: Transition.leftToRightWithFade);
           } else if (payment_type == 'Credit Term') {
             tranId.value = merchantPaymentModel.value.tranId!;
             print("success");
@@ -80,8 +84,9 @@ class MerchantPaymentController extends GetxController {
             if (tranId.value.isNotEmpty) {
               hitPayment(url: success_link.value, tranId: tranId.value);
             }
-            bottomNavBarController.selectedIndex.value=0;
-            Get.to(const NavigationScreen(),transition: Transition.leftToRightWithFade);
+            bottomNavBarController.selectedIndex.value = 0;
+            Get.to(const NavigationScreen(),
+                transition: Transition.leftToRightWithFade);
           }
           print("Success");
         } else if (merchantPaymentModel.value.status == false) {

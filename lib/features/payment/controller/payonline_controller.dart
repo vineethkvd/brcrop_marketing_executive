@@ -35,7 +35,7 @@ class PayOnlineController extends GetxController {
       {required int order_amount,
       required String dealer_id,
       required int paid_amount,
-      required String transfer_id}) async {
+      required String transfer_id,required String orderType}) async {
     final baseController = BaseController();
     const apiUrl = ApiEndPoints.mainBaseURL + ApiEndPoints.mePayment;
     print("apiUrl $apiUrl");
@@ -49,7 +49,8 @@ class PayOnlineController extends GetxController {
       "payment_type": "Pay Online",
       "dealer_id": dealer_id,
       "paid_amount": paid_amount,
-      "transfer_id": transfer_id
+      "transfer_id": transfer_id,
+      "order_type": orderType
     };
 
 
